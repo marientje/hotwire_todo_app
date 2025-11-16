@@ -1,17 +1,9 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: %i[ show edit update destroy ]
+  before_action :set_todo, only: %i[ edit update destroy ]
 
   # GET /todos or /todos.json
   def index
     @todos = Todo.all
-  end
-
-  # GET /todos/1 or /todos/1.json
-  def show
-  end
-
-  # GET /todos/new
-  def new
     @todo = Todo.new
   end
 
@@ -22,14 +14,14 @@ class TodosController < ApplicationController
   # POST /todos or /todos.json
   def create
     @todo = Todo.new(todo_params)
+    @todos = Todo.all
 
     respond_to do |format|
       if @todo.save
-        format.html { redirect_to @todo, notice: "Todo was successfully created." }
-        format.json { render :show, status: :created, location: @todo }
+        format.turbo_stream
+        format.html { redirect_to todos_url, notice: "Todo was successfully created." }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+        format.html { render :index, status: :unprocessable_entity }
       end
     end
   end
@@ -38,11 +30,10 @@ class TodosController < ApplicationController
   def update
     respond_to do |format|
       if @todo.update(todo_params)
-        format.html { redirect_to @todo, notice: "Todo was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @todo }
+        format.turbo_stream
+        format.html { redirect_to todo_url(@todo), notice: "Todo was successfully updated." }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+        format.html { render :index, status: :unprocessable_entity }
       end
     end
   end
@@ -52,8 +43,8 @@ class TodosController < ApplicationController
     @todo.destroy!
 
     respond_to do |format|
-      format.html { redirect_to todos_path, notice: "Todo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove(@todo) }
+      format.html { redirect_to todos_url, status: :see_other, notice: "Todo was successfully destroyed." }
     end
   end
 
@@ -65,6 +56,6 @@ class TodosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def todo_params
-      params.expect(todo: [ :title, :status ])
+      params.expect(todo: [ :name, :status ])
     end
 end
