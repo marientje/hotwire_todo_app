@@ -9,8 +9,11 @@
       </ul>
     </div>
   <% end %>
-  <div class="flex items-stretch flex-grow">
-    <%= form.text_field :name, class: "block w-full rounded-none rounded-l-md sm:text-sm border-gray-300", placeholder: "Add a new todo...", required: true %>
-    <%= form.button "Submit", class: "-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer min-w-24 flex items-center justify-center", data: { turbo_submits_with: spinner } %>
+  <div data-controller="character-counter" data-character-counter-max-value="20">
+    <div class="flex items-stretch flex-grow">
+      <%= form.text_field :name, class: "block w-full rounded-none rounded-l-md sm:text-sm border-gray-300", placeholder: "Add a new todo...", required: true, data: { action: "input->character-counter#update" } %>
+      <%= form.button "Submit", class: "-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer min-w-24 flex items-center justify-center", data: { turbo_submits_with: spinner } %>
+    </div>
+    <p>There are <strong data-character-counter-target="counter"></strong> characters remaining.</p>
   </div>
 <% end %>
